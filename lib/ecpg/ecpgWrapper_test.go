@@ -95,11 +95,11 @@ func Test_pullErrorData(t *testing.T) {
 			want: "ERROR: syntax error at or near \";\"",
 		},
 		{
-			name: "random string",
+			name: "random (missing stdin:1:) string",
 			args: args{
 				out: "the brown dog jumps over the red fox",
 			},
-			want: "the brown dog jumps over the red fox",
+			want: "",
 		},
 		{
 			name: "empty string",
@@ -185,6 +185,46 @@ func TestNewECPG(t *testing.T) {
 				got.config.QuestionMarks != tt.want.config.QuestionMarks ||
 				got.config.TrimWhiteSpace != tt.want.config.TrimWhiteSpace {
 				t.Errorf("NewECPG() = %v, want %v", *got, *tt.want)
+			}
+		})
+	}
+}
+
+func TestECPG_CheckStatement(t *testing.T) {
+	type fields struct {
+		config *Config
+	}
+	type args struct {
+		stmt string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "simple inclusive case",
+			fields: fields{
+				config: &Config{
+					AddSemiColon:   true,
+					TrimWhiteSpace: true,
+					QuestionMarks:  true,
+				},
+			},
+			args: args{
+				stmt: "SELECT name, value, type FROM MySchema.MyTable WHERE id = ?",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &ECPG{
+				config: tt.fields.config,
+			}
+			if err := e.CheckStatement(tt.args.stmt); (err != nil) != tt.wantErr {
+				t.Errorf("ECPG.CheckStatement() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
