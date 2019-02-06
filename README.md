@@ -48,6 +48,8 @@ Eg. `pglint-cli -trim=false -questionmarks=false 'SELECT * FROM myTable;'`
 
 ### Docker
 
-Build: `docker build -t pglint .`
+`docker run jonfriesen/pglint 'SELECT DATABASE_NAME FROM M_DATABASES;'`
 
+#### Build yourself
+Build: `docker build -t pglint .`
 Run: `docker run pglint 'SELECT DATABASE_NAME FROM M_DATABASES;'`
