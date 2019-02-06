@@ -18,4 +18,3 @@ COPY --from=builder /go/src/github.com/jonfriesen/pglint/bin/pglint-cli /usr/bin
 
 # any commands added after will be appended
 ENTRYPOINT [ "pglint-cli" ]
-# ENTRYPOINT [ "sh" ]
