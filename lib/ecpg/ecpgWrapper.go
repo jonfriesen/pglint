@@ -92,26 +92,30 @@ func executeECPGCommand(stmt string) error {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Println(err)
 		return errors.New(pullErrorData(string(out)))
 	}
-	log.Println(string(out))
 	return nil
 }
 
 // pullErrorData grabs the first line of the out text (the actual error)
 // then removes the common, unhelpful location indicator and returns
 func pullErrorData(out string) string {
-	// grab first line
-	out = strings.Split(out, "\n")[0]
-	// remove `stdin:1:`
-	return strings.TrimSpace(strings.Replace(out, "stdin:1:", "", 1))
+	outs := strings.Split(out, "\n")
+
+	for _, v := range outs {
+		if strings.HasPrefix(v, "stdin:1:") {
+			// remove `stdin:1:` & return
+			return strings.TrimSpace(strings.Replace(v, "stdin:1:", "", 1))
+		}
+	}
+
+	return ""
 }
 
 // checkDependencies executes a command and verifies output
 func checkDependencies(p string) bool {
 
-	cmd := exec.Command("/bin/bash", "-c", fmt.Sprintf("command -v %v", p))
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("command -v %v", p))
 
 	err := cmd.Run()
 	if err != nil {

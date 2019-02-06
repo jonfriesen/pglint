@@ -15,8 +15,10 @@ This library is used to validate PostgreSQL statements and running them against 
 
 ## usage
 
-Consume the library by creating a ECPG object.
+The generaly rule of thumb is no repsonse is good news.
 
+### Library
+Consume the library by creating a ECPG object.
 ```go
 config := ecpg.Config{
     AddSemiColon:   *addSemicolons,
@@ -30,7 +32,7 @@ if err != nil {
 }
 ```
 
-CLI usage:
+### CLI usage
 `pglint-cli [options] <query>`
 ```
 Usage of pglint-cli:
@@ -43,3 +45,9 @@ Usage of pglint-cli:
 ```
 
 Eg. `pglint-cli -trim=false -questionmarks=false 'SELECT * FROM myTable;'`
+
+### Docker
+
+Build: `docker build -t pglint .`
+
+Run: `docker run pglint 'SELECT DATABASE_NAME FROM M_DATABASES;'`
