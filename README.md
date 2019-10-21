@@ -1,6 +1,8 @@
 # pglint
 This library is used to validate PostgreSQL statements and running them against the ecpg library to determine if they are valid.
 
+![Build Status](https://github.com/jonfriesen/pglint/workflows/build/badge.svg)
+
 ## requirements
 - Go v1.11+
 - [ecpg library](https://manpages.debian.org/experimental/libecpg-dev/ecpg.1.en.html)
