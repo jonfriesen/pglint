@@ -21,7 +21,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v1
     - name: Install ecpg
-      run: apt install libecpg-dev
+      run: sudo apt install libecpg-dev -y
     - name: Vet
       run: go vet ./...
       env: 
