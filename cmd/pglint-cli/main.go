@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/jonfriesen/pglint/lib/ecpg"
+	"github.com/jonfriesen/pglint/pkg/ecpg"
 )
 
 func main() {
