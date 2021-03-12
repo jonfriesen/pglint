@@ -15,7 +15,8 @@ func main() {
 	addSemicolons := flag.Bool("addSemicolons", true, "Automatically add semicolons to queries if not already present (will fail without a semicolon)")
 	trimWhitespace := flag.Bool("trim", true, "Trim whitespace at head and tail of query")
 	allowQuestionMarks := flag.Bool("questionmarks", true, "Determines whether or not the to fill question mark placeholders with sample data for linting")
-	inputFile := flag.String("input", "", "What file to read in to analyze, just reads from end of command if empty")
+	inputFile := ""
+	flag.StringVar(&inputFile, "input", "", "What file to read in to analyze, just reads from end of command if empty")
 
 	flag.Parse()
 
@@ -30,11 +31,10 @@ func main() {
 		log.Fatalf("Error: %v", err)
 	}
 	query := ""
-	inputFileString := *inputFile
-	if inputFileString == "" {
+	if inputFile == "" {
 		query = strings.Join(flag.Args(), " ")
 	} else {
-		file, err := ioutil.ReadFile(inputFileString)
+		file, err := ioutil.ReadFile(inputFile)
 		if err != nil {
 			fmt.Printf("ERROR: %s", err)
 			os.Exit(1)
