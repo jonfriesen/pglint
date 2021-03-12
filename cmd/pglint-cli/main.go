@@ -12,10 +12,10 @@ import (
 )
 
 func main() {
+	var inputFile string
 	addSemicolons := flag.Bool("addSemicolons", true, "Automatically add semicolons to queries if not already present (will fail without a semicolon)")
 	trimWhitespace := flag.Bool("trim", true, "Trim whitespace at head and tail of query")
 	allowQuestionMarks := flag.Bool("questionmarks", true, "Determines whether or not the to fill question mark placeholders with sample data for linting")
-	inputFile := ""
 	flag.StringVar(&inputFile, "input", "", "What file to read in to analyze, just reads from end of command if empty")
 
 	flag.Parse()
