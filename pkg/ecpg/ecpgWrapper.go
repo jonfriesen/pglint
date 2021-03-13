@@ -49,9 +49,9 @@ func NewECPG(c *Config) (*ECPG, error) {
 
 // CheckStatement checks if a statement is valid PostgreSQL syntax
 // Empty checks are done on the stmt string
-func (e *ECPG) CheckStatement(stmt string) error {
+func (e *ECPG) CheckStatement(stmt string) []error {
 	if stmt == "" {
-		return errors.New("statement string is empty")
+		return []error{errors.New("statement string is empty")}
 	}
 
 	if e.config.TrimWhiteSpace {
@@ -66,33 +66,44 @@ func (e *ECPG) CheckStatement(stmt string) error {
 		stmt = fmt.Sprintf("%s;", stmt)
 	}
 
-	if !strings.HasPrefix(stmt, "EXEC SQL") {
-		stmt = fmt.Sprintf("EXEC SQL %s", stmt)
-	}
-
 	return executeECPGCommand(stmt)
 
 }
 
 // executeECPGCommand executes a sql statement against the ecpg tool
-func executeECPGCommand(stmt string) error {
+func executeECPGCommand(stmt string) []error {
+	collectedErrorStrings := []error{}
 
-	args := []string{"-o", "-", "-"}
-	cmd := exec.Command("ecpg", args...)
+	splitStatement := strings.SplitAfter(stmt, ";")
+	for _, element := range splitStatement {
+		if element == "" {
+			continue
+		}
+		if !strings.HasPrefix(element, "EXEC SQL") {
+			element = fmt.Sprintf("EXEC SQL %s", element)
+		}
+		element = strings.Replace(element, "\n", "", -1)
 
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		log.Fatal(err)
+		args := []string{"-o", "-", "-"}
+		cmd := exec.Command("ecpg", args...)
+
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		go func() {
+			defer stdin.Close()
+			io.WriteString(stdin, element)
+		}()
+
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			collectedErrorStrings = append(collectedErrorStrings, errors.New(pullErrorData(string(out))))
+		}
 	}
-
-	go func() {
-		defer stdin.Close()
-		io.WriteString(stdin, stmt)
-	}()
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.New(pullErrorData(string(out)))
+	if len(collectedErrorStrings) != 0 {
+		return collectedErrorStrings
 	}
 	return nil
 }
