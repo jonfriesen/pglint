@@ -83,7 +83,6 @@ func executeECPGCommand(stmt string) []error {
 			element = fmt.Sprintf("EXEC SQL %s", element)
 		}
 		element = strings.Replace(element, "\n", "", -1)
-		fmt.Printf("Running statement: %s\n", element)
 
 		args := []string{"-o", "-", "-"}
 		cmd := exec.Command("ecpg", args...)
@@ -100,7 +99,6 @@ func executeECPGCommand(stmt string) []error {
 
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			fmt.Printf("%s", err)
 			collectedErrorStrings = append(collectedErrorStrings, errors.New(pullErrorData(string(out))))
 		}
 	}
